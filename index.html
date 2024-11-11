@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Data Retrieval Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100vh;
+            margin: 0;
+            background-color: #f2f2f2;
+        }
+        form {
+            width: 300px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        h2 {
+            text-align: center;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        input, select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        #result {
+            width: 300px;
+            padding: 10px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <form id="collegeForm">
+        <h2>College Data Retrieval</h2>
+
+        <div class="form-group">
+            <label for="csvFile">Upload CSV File:</label>
+            <input type="file" id="csvFile" accept=".csv" required>
+        </div>
+
+        <div class="form-group">
+            <label for="college">College Name:</label>
+            <input type="text" id="college" name="college" required>
+        </div>
+
+        <div class="form-group">
+            <label for="program">Program of Study:</label>
+            <select id="program" name="program" required>
+                <option value="">Select a program</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Business">Business</option>
+                <option value="Medicine">Medicine</option>
+                <option value="Arts">Arts</option>
+                <option value="Sciences">Sciences</option>
+                <option value="Law">Law</option>
+                <option value="Education">Education</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="location">Preferred Location:</label>
+            <input type="text" id="location" name="location">
+        </div>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div id="result"></div>
+
+    <script>
+        let collegeData = []; // Array to hold college data
+
+        // Function to read the CSV file
+        document.getElementById('csvFile').addEventListener('change', function(event) {
+            const file = event.target.files[0]; // Get the uploaded file
+            const reader = new FileReader(); // Create a FileReader object
+
+            reader.onload = function(e) {
+                const text = e.target.result; // Get the file content
+                collegeData = parseCSV(text); // Parse the CSV data
+            };
+
+            reader.readAsText(file); // Read the file as text
+        });
+
+        function parseCSV(data) {
+            const rows = data.split('\n').map(row => row.split(','));
+            return rows.map(row => row.map(cell => cell.replace(/(^"|"$)/g, '').trim())); // Trim quotes
+        }
+
+        document.getElementById('collegeForm').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+
+            const collegeName = document.getElementById('college').value.trim();
+            const resultDiv = document.getElementById('result');
+            resultDiv.innerHTML = ''; // Clear previous results
+
+            // Filter college data
+            const collegeInfo = collegeData.find(row => row[2].toLowerCase() === collegeName.toLowerCase());
+            if (collegeInfo) {
+                // Display college information
+                resultDiv.innerHTML = `<h3>College Details:</h3>
+                    <p><strong>S. No:</strong> ${collegeInfo[0]}</p>
+                    <p><strong>University Name:</strong> ${collegeInfo[1]}</p>
+                    <p><strong>College Type:</strong> ${collegeInfo[3]}</p>
+                    <p><strong>State Name:</strong> ${collegeInfo[4]}</p>
+                    <p><strong>District Name:</strong> ${collegeInfo[5]}</p>`;
+            } else {
+                resultDiv.innerHTML = `<h3>No details found for "${collegeName}"</h3>`;
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Local CSV Data Display</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+    </style>
+</head>
+<body>
+    <h1>Local CSV Data Display</h1>
+    <input type="file" id="csvFile" accept=".csv">
+    <table id="dataTable">
+        <thead>
+            <tr>
+                <th>S. No.</th>
+                <th>University Name</th>
+                <th>College Name</th>
+                <th>College Type</th>
+                <th>State Name</th>
+                <th>District Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data will be inserted here -->
+        </tbody>
+    </table>
+
+    <script>
+        document.getElementById('csvFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const text = e.target.result;
+                    displayData(parseCSV(text));
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        function parseCSV(data) {
+            const rows = data.split('\n').map(row => row.split(','));
+            return rows.map(row => row.map(cell => cell.replace(/(^"|"$)/g, '').trim())); // Trim quotes and whitespace
+        }
+
+        function displayData(data) {
+            const tableBody = document.querySelector('#dataTable tbody');
+            tableBody.innerHTML = ''; // Clear existing data
+
+            data.forEach((row, index) => {
+                if (index === 0) return; // Skip header row
+                const tr = document.createElement('tr');
+                row.forEach(cell => {
+                    const td = document.createElement('td');
+                    td.textContent = cell; // Set cell content
+                    tr.appendChild(td);
+                });
+                tableBody.appendChild(tr); // Append row to table body
+            });
+        }
+    </script>
+</body>
+</html>
